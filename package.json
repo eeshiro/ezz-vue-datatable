@@ -1,0 +1,27 @@
+{
+  "name": "@eeshiro/ezz-vue-datatable",
+  "version": "1.0.4",
+  "description": "Vue.js data table by eeshiro",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "npm",
+    "data-table",
+    "vue"
+  ],
+  "author": "Eeshiro Deku",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "^3.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eeshiro/ezz-vue-datatable.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
+}
