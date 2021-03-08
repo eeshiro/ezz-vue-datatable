@@ -19,29 +19,49 @@ Vue.use(DataTable);
 <strong>data-table-offline</strong>  (offline manual set of items)
 
 
-# example (online)
+# example 
 ```
 <template>
-    <data-table-online
-	  :headers="headers"
-	  :url="http:\\localhost:8000/get-users"
-	  :requestWith="{position: 'programmer'}">	
+	<div>
+		<data-table-online
+		  :headers="headers"
+		  :url="http:\\localhost:8000/get-users"
+		  :requestWith="{position: 'programmer'}">	
 
-	  <template #items="{item}">
-	  	<td align="center">{{item.id}}</td>
-	  	<td>{{item.name}}</td>
-	  	<td>{{item.sex}}</td>
-	  	<td>{{item.address}}</td>
-	  	<td>{{item.birthday}}</td>
-	  	<td>{{item.position}}</td>
-	  	<td align="center">
-	  		<button>
-	  			view
-	  		</button>
-	  	</td>
-	  </template>	
-	</data-table-online>
-      
+		  <template #items="{item}">
+		  	<td align="center">{{item.id}}</td>
+		  	<td>{{item.name}}</td>
+		  	<td>{{item.sex}}</td>
+		  	<td>{{item.address}}</td>
+		  	<td>{{item.birthday}}</td>
+		  	<td>{{item.position}}</td>
+		  	<td align="center">
+		  		<button>
+		  			view
+		  		</button>
+		  	</td>
+		  </template>	
+		</data-table-online>
+
+		<data-table-offline
+		  :headers="headers"
+		  :items="items">	
+
+		  <template #items="{item}">
+		  	<td align="center">{{item.id}}</td>
+		  	<td>{{item.name}}</td>
+		  	<td>{{item.sex}}</td>
+		  	<td>{{item.address}}</td>
+		  	<td>{{item.birthday}}</td>
+		  	<td>{{item.position}}</td>
+		  	<td align="center">
+		  		<button>
+		  			view
+		  		</button>
+		  	</td>
+		  </template>	
+		</data-table-offline>
+	</div>
 </template>
 <script>
 	export default {
@@ -85,11 +105,33 @@ Vue.use(DataTable);
 					text : 'Action',
 					align: 'center',
 				},
+			],
+			items : [
+				{
+					name : 'John Doe',
+					sex : 'Male',
+					address : 'New York City',
+					birthday : '1990-09-18',
+					position : 'Programmer'
+				},
+				{
+					name : 'Jane Doe',
+					sex : 'Female',
+					address : 'USA',
+					birthday : '2001-05-13',
+					position : 'Analyst'
+				},
+				{
+					name : 'Mikey Mousey',
+					sex : 'Male',
+					address : 'New York City',
+					birthday : '1998-10-11',
+					position : 'Programmer'
+				},
 			]
 		}),
 	}
 </script>	
-
 ```
 	
 	
