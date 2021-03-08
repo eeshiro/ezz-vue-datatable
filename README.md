@@ -17,6 +17,80 @@ Vue.use(DataTable);
 # directive
 <strong>data-table-online</strong>  (online/live data query)<br>
 <strong>data-table-offline</strong>  (offline manual set of items)
+
+
+# example (online)
+```
+<template>
+    <data-table-online
+	  :headers="headers"
+	  :url="http:\\localhost:8000/get-users"
+	  :requestWith="{position: 'programmer'}">	
+
+	  <template #items="{item}">
+	  	<td align="center">{{item.id}}</td>
+	  	<td>{{item.name}}</td>
+	  	<td>{{item.sex}}</td>
+	  	<td>{{item.address}}</td>
+	  	<td>{{item.birthday}}</td>
+	  	<td>{{item.position}}</td>
+	  	<td align="center">
+	  		<button>
+	  			view
+	  		</button>
+	  	</td>
+	  </template>	
+	</data-table-online>
+      
+</template>
+<script>
+	export default {
+		props : {
+			changeTranNo : Function
+		},
+		data : ()=>({
+			headers : [
+				{
+					text : 'Id',
+					align : 'center',
+					sortable : true,
+					value : 'id'
+				},
+				{
+					text : 'Name',
+					sortable : true,
+					value : 'name'
+				},
+				{
+					text : 'Sex',
+					sortable : true,
+					value : 'sex'
+				},
+				{
+					text : 'Address',
+					sortable : true,
+					value : 'address'
+				},
+				{
+					text : 'Birthday',
+					sortable : true,
+					value : 'birthday'
+				},
+				{
+					text : 'Position',
+					sortable : true,
+					value : 'roh_date'
+				},
+				{
+					text : 'Action',
+					align: 'center',
+				},
+			]
+		}),
+	}
+</script>	
+
+```
 	
 	
 # common props
