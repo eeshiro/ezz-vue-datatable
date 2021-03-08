@@ -1,5 +1,5 @@
 {
-  "name": "@eeshiro/ezz-vue-datatable",
+  "name": "ezz-vue-datatable",
   "version": "1.0.4",
   "description": "Vue.js data table by eeshiro",
   "main": "index.js",
@@ -16,12 +16,5 @@
   "license": "MIT",
   "dependencies": {
     "jquery": "^3.6.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/eeshiro/ezz-vue-datatable.git"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
   }
 }
