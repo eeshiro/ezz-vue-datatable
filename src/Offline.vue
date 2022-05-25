@@ -70,7 +70,7 @@
 							    <small class="input-group-text border-0">Show</small>
 							</div>
 							<select v-model="ipp" class="form-control form-control-sm text-right p-0">
-								<option v-for="o in entriesOptions" :value="o">{{o !== -1 ? o : 'All' }}</option>
+								<option v-for="(o, index) in entriesOptions" :value="o" :key="index">{{o !== -1 ? o : 'All' }}</option>
 						 	</select>
 							<div class="input-group-prepend ">
 							    <small class="input-group-text border-0">entries</small>
@@ -128,7 +128,7 @@
 										:data="$data"/>
 							  	</div>
 							  	<label class="m-1 text-bold"><small  >Search:  </small></label>
-							  	<input type="text" placeholder="Enter text here..." class="form-control  rounded-0 m-0 " v-model= "searchValue" style="max-width: 200px!important;">
+							  	<input type="text" placeholder="Enter text here..." class="form-control form-control-sm  rounded-0 m-0 " v-model= "searchValue" style="max-width: 200px!important;">
 							  	<div class="">
 								  	<slot name="search-after" 
 										:items="items" 
@@ -157,11 +157,13 @@
 				</div>
 			</div>
 
-			<transition name="fade" v-if="showLoading">
-				<div class="progress" v-show="busy">
-				  <div class="indeterminate"></div>
-				</div>
-			</transition>
+      <div class="progress-container">
+        <transition name="fade" v-if="showLoading">
+          <div class="progress" v-show="busy">
+            <div class="indeterminate"></div>
+          </div>
+        </transition>
+      </div>
 			<table :class="tableClass" :style="tableStyle">
 				<thead>
 					<tr>
@@ -190,10 +192,11 @@
 								</span>
 							</th>
 
-							<th v-for="header in headers"
+							<th v-for="(header,index) in headers"
 								@click="header.sortable == true ? sort(header.value): ''" 
 								:style="header.style || {'font-weight': 'lighter'}"
-								:class="[ `text-${header.align}`, header.class, header.sortable ? 'cursor-pointer' : '']">
+								:class="[ `text-${header.align}`, header.class, header.sortable ? 'cursor-pointer' : '']"
+                :key="index">
 
 								{{header.text}}
 								<i v-if="header.sortable" :class="['fa', sortBy == header.value ? (inverse === true ? 'fa-arrow-down' : 'fa-arrow-up') : '']"></i>
@@ -203,7 +206,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="(item, i) in outputItems" @click="showSelect  ? item.selected = !item.selected : (singleSelect ? select(item) : '')">
+					<tr v-for="item in outputItems" @click="showSelect  ? item.selected = !item.selected : (singleSelect ? select(item) : '')" :key="item._key">
 						<slot name="items"  
 							:item="item" 
 							:items="items" 
@@ -227,7 +230,7 @@
 							<td align="center" v-if="showSelect || singleSelect">
 								<input type="checkbox" style="zoom: 1.5" v-model="item.selected">
 							</td>
-							<td v-for="header in headers" :align="header.align">{{item[header.value]}}</td>
+							<td v-for="(header, i) in headers" :align="header.align" :key="i">{{item[header.value]}}</td>
 						</slot>
 					</tr>
 					<tr v-if="outputItems.length == 0">
@@ -365,7 +368,7 @@
 										        <span class="sr-only">Previous</span>
 										      </a>
 										    </li>
-										    <li v-for="r in range" :class="['page-item', 'cursor-pointer', r == page ? 'active' : '' ]"  @click=" r != page ? page = r : ''">
+										    <li v-for="(r, i) in range" :key="i" :class="['page-item', 'cursor-pointer', r == page ? 'active' : '' ]"  @click=" r != page ? page = r : ''">
 										    	<a class="page-link" href="javascript:void(0)">{{r}}</a></li>
 										    <li :class="['page-item', 'cursor-pointer', page == totalPages ? 'disabled' : '']" @click="page < totalPages ? page++ : ''">
 										      <a class="page-link" href="javascript:void(0)" aria-label="Next">
@@ -550,6 +553,11 @@
 				}
 				this.sortBy = value;
 			},
+			addItemKey(){
+				this.items.forEach((row, i)=>{
+					this.$set(this.items[i], '_key', i);
+				})
+			},
 			addSelectionOption(){
 				this.items.forEach((row, i)=>{
 					this.$set(this.items[i], 'selected', false);
@@ -568,10 +576,10 @@
 				current.selected = true;
 			},
 			setPage(page){
-				this.page = page;
+				this.page = parseInt(page);
 			},
 			setIpp(val){
-				this.ipp = val;
+				this.ipp = parseInt(val);
 			},
 			toggleBusy(){
 
@@ -609,6 +617,8 @@
 				if(this.showSelect || this.singleSelect){
 					this.addSelectionOption();
 				}
+
+				this.addItemKey();
 				this.page = 1;
 
 				this.toggleBusy();
@@ -717,16 +727,16 @@
 
 				var list = this.sortedItems;
 				var page = this.page;
-				var ipp  = this.ipp == -1 ? list.length : this.ipp;
-			    
-		        if (!list || list.length == 0) return [];
+				var ipp  = this.ipp == -1 ? list.length : parseInt(this.ipp);
 
-		        var start =  Math.ceil((page - 1) * ipp);
-		        var end = start + ipp;
+		    if (!list || list.length == 0) return [];
 
-		        start = +start; //parse to int
-		        
-		        return list.slice(start, end);
+        var start =  parseInt(Math.ceil((page - 1) * ipp));
+        var end = start + ipp;
+
+        //start = +start; //parse to int
+        
+        return list.slice(start, end);
 			},
 			totalResults(){
 				return this.searchedItems.length;
@@ -741,10 +751,6 @@
 </script>
 
 <style scoped="">
-	table {
-
-	}
-
 	thead th {
 		color: grey;
 		font-weight: bold !important; 
@@ -786,13 +792,21 @@
 
 
 	/* Progress Bar */
+  .progress-container{
+    height: 3px;
+    position:static;
+    display: block;
+    width: 100%;
+  }
 	.progress {
-		top: 38px;
-		position: absolute;
+    z-index: 1;
+		/* top: 38px; */
+		position: relative;
 		height: 2px;
 		display: block;
 		width: 100%;
 		background-color: #acece6;
+		/* background-color: #dd7e18; */
 		border-radius: 0px;
 		background-clip: padding-box;
 		margin: 0;
