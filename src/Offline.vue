@@ -199,7 +199,7 @@
                 :key="index">
 
 								{{header.text}}
-								<i v-if="header.sortable" :class="['fa', sortBy == header.value ? (inverse === true ? 'fa-arrow-down' : 'fa-arrow-up') : '']"></i>
+								<i v-if="header.sortable" :class="[sortBy == header.value ? (inverse === true ? sortIcons.desc : sortIcons.asc) : '']"></i>
 							</th>
 								
 						</slot>
@@ -532,6 +532,17 @@
 			isBusy: {
 				type : Boolean,
 				default : false
+			},
+			sortIcons:{
+				type: Object,
+				default: {
+					asc: 'fa fa-arrow-up',
+					desc: 'fa fa-arrow-down'
+				}
+			},
+			customFilter: {
+				type: Function,
+				default: items=>items
 			}
 		},
 
@@ -619,7 +630,7 @@
 				}
 
 				this.addItemKey();
-				this.page = 1;
+				//this.page = 1;
 
 				this.toggleBusy();
 			},
@@ -637,6 +648,11 @@
 			totalPages(){
 				var ipp = this.ipp != -1 ? this.ipp :  this.sortedItems.length;
 				var total = Math.ceil(this.sortedItems.length / ipp);
+
+				if(this.page > total){
+					this.page = 1;
+				}
+
 				return total;
 			},
 			range(){
@@ -710,11 +726,14 @@
 			},
 			searchedItems(){
 
-				var items =  this.items.filter((row)=>{
+				var items =  this.appliedCustomFilters.filter((row)=>{
 					var res = Object.values(row).filter((val)=>{
 						val = !val ? '' : val;
 						val = val.toString().toLowerCase() || '';
-						return val.search(this.searchValue.toLowerCase()) > -1;
+
+						val = escape(val);
+						const searchVal = escape(this.searchValue.toLowerCase());
+						return val.search(searchVal) > -1;
 					})
 
 					return res.length > 0;
@@ -722,10 +741,20 @@
 
 				return items;
 			},
+			appliedCustomFilters(){
+				var filteredItems = this.customFilter(this.items);
+
+				// if(this.items != filteredItems){
+				// 	this.page = 1;
+				// }
+
+				return filteredItems;
+			},
 
 			outputItems(){
 
 				var list = this.sortedItems;
+
 				var page = this.page;
 				var ipp  = this.ipp == -1 ? list.length : parseInt(this.ipp);
 
