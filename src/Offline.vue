@@ -128,7 +128,7 @@
 										:data="$data"/>
 							  	</div>
 							  	<label class="m-1 text-bold"><small  >Search:  </small></label>
-							  	<input type="text" placeholder="Enter text here..." class="form-control form-control-sm  rounded-0 m-0 " v-model= "searchValue" style="max-width: 200px!important;">
+							  	<input type="text" placeholder="" class="form-control form-control-sm  rounded-0 m-0 " v-model= "searchQuery" style="max-width: 200px!important;">
 							  	<div class="">
 								  	<slot name="search-after" 
 										:items="items" 
@@ -543,6 +543,10 @@
 			customFilter: {
 				type: Function,
 				default: items=>items
+			},
+			onUpdated: {
+				type: Function,
+				default: ()=>{}
 			}
 		},
 
@@ -550,10 +554,12 @@
 			sortBy : '',
 			inverse : false,
 			timeOut : null,
-			searchValue : '',
 			page : 1,
 			ipp : null,
 			busy : true,
+			searchTimeout: null,
+			searchValue : '',
+			searchQuery: ''
 		}),
 		methods : {
 			sort(value){
@@ -608,7 +614,13 @@
 		},
 		watch :{
 			searchString(value){
-				this.searchValue = value;
+				this.searchQuery = value;
+			},
+			searchQuery(value){
+				clearTimeout(this.searchTimeout);
+				this.searchTimeout = setTimeout(()=>{
+					this.searchValue = value;
+				}, 300)
 			},
 			itemsPerPage(val){
 				this.ipp = val;
@@ -727,16 +739,25 @@
 			searchedItems(){
 
 				var items =  this.appliedCustomFilters.filter((row)=>{
-					var res = Object.values(row).filter((val)=>{
+					var res = Object.values(row).find((val)=>{
 						val = !val ? '' : val;
-						val = val.toString().toLowerCase() || '';
+						val = val.toString().toLowerCase().replace(/\s+/g,' ').trim() || '';
 
-						val = escape(val);
-						const searchVal = escape(this.searchValue.toLowerCase());
-						return val.search(searchVal) > -1;
+						const searchVal = this.searchValue.trim().replace(/[^a-zA-Z0-9]/g, "\\$&"); 
+
+						//console.log(searchVal);
+
+          	var searchRegex = new RegExp(`${searchVal}`,"gi");
+          	return searchRegex.test(val)
+
+						// val = escape(val);
+						// const searchVal = escape(this.searchValue.toLowerCase());
+						// return val.search(searchVal) > -1;
+
+
 					})
 
-					return res.length > 0;
+					return res;
 				});
 
 				return items;
@@ -775,6 +796,9 @@
 			this.searchValue 	= this.searchString;
 			this.ipp 			= this.itemsPerPage;
 			this.page 			= this.pageStart;
+		},
+		updated(){
+			this.onUpdated();
 		}
 	}
 </script>
